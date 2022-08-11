@@ -6,14 +6,19 @@ import Timestamp from '@hig/timestamp';
 
 function App() {
     let notificationData = [];
+
+    const span = document.getElementById("api-span");
+    span.setAttribute("data-api-url",process.env.NOTIFICATION_URL);
+
+    const notificationURL= span.getAttribute("data-api-url");
+
     const [APIData, setAPIData] = useState([]);
     useEffect(() => {
-        axios.get(process.env.NOTIFICATION_URL)
+        axios.get(notificationURL)
             .then((response) => {
                 setAPIData(response.data.notifications);
             });
     }, []);
-
   for (let i = 0; i < APIData.length; i++) {
     var notificationItem = {
       id: APIData[i].id,
@@ -26,18 +31,20 @@ function App() {
       content: <div>                
         <b>{APIData[i].title}</b>
         <p>{APIData[i].longDescription}</p>
-        <a href={APIData[i].link}>{APIData[i].linkTitle}</a>
+        <a href={APIData[i].link} target="_blank">{APIData[i].linkTitle}</a>
       </div>
     };
     notificationData.push(notificationItem);
   }
-
+  
   return (
+    <div>
     <NotificationsPanel class="NotificationsFlyout"
       heading="Notifications"
       indicatorTitle="View application alerts"
       notifications={notificationData}>
     </NotificationsPanel>
+    </div>
   );
 }
 
