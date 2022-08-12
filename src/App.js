@@ -4,21 +4,25 @@ import React, { useEffect, useState } from 'react';
 import NotificationsPanel from '@filipeop/notifications-panel';
 import Timestamp from '@hig/timestamp';
 
-function App() {
-    let notificationData = [];
+function App(props) {
+  let notificationData = [];
 
-    const span = document.getElementById("api-span");
-    span.setAttribute("data-api-url",process.env.NOTIFICATION_URL);
+  const [NotificationURL, setNotificationURL] = useState(props.url);
+  const [APIData, setAPIData] = useState([]);
 
-    const notificationURL= span.getAttribute("data-api-url");
+  useEffect(() => {
+    if(NotificationURL){
+        axios.get(NotificationURL)
+          .then((response) => {
+            console.log("asd")
+            setAPIData(response.data.notifications);
+        })
+        .catch((err) => {
+          console.log(err)
+        });
+    }
+  }, [NotificationURL]);
 
-    const [APIData, setAPIData] = useState([]);
-    useEffect(() => {
-        axios.get(notificationURL)
-            .then((response) => {
-                setAPIData(response.data.notifications);
-            });
-    }, []);
   for (let i = 0; i < APIData.length; i++) {
     var notificationItem = {
       id: APIData[i].id,
@@ -36,15 +40,21 @@ function App() {
     };
     notificationData.push(notificationItem);
   }
-  
+
+  function cc(){
+    let uu="https://d21acdehdx53uf.cloudfront.net/dynNotifications.json";
+    setNotificationURL(uu);
+  }
+
   return (
-    <div>
+    <>
     <NotificationsPanel class="NotificationsFlyout"
       heading="Notifications"
       indicatorTitle="View application alerts"
       notifications={notificationData}>
     </NotificationsPanel>
-    </div>
+    <button onClick={cc}>click</button>
+    </>
   );
 }
 

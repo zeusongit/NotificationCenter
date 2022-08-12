@@ -13,6 +13,7 @@ module.exports = env => {
             filename: 'index.bundle.js',
             publicPath: '',
             clean: true,
+            library: 'notificationLib'
         },
         module: {
             rules: [
