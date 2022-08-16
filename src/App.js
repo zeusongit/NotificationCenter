@@ -5,36 +5,55 @@ import NotificationsPanel from '@filipeop/notifications-panel';
 import Timestamp from '@hig/timestamp';
 
 function App() {
-  const [APIData, setAPIData] = useState(false);
+  const [APIData, setAPIData] = useState([]);
   useEffect(() => {
     window.RequestNotifications = RequestNotifications;
-  }, []);
-  
+    window.RequestNotificationCount = RequestNotificationCount;
+    window.AddLocalNotification = AddLocalNotification;
+  }, [APIData]);
+
+  let notificationData = [];  
   const RequestNotifications = (url) => {
     axios.get(url)
     .then((response) => {
       const notifications = response.data.notifications;
-      let notificationData = [];
+      //let notificationData = [];
       for (let i = 0; i < notifications.length; i++) {
-        var notificationItem = {
-          id: notifications[i].id,
-          featured: true,
-          unread: true,
-          image: <img width={40} src={notifications[i].thumbnail}></img>,
-          message: notifications[i].title,
-          href: notifications[i].linkTitle,
-          timestamp: <Timestamp timestamp={notifications[i].created} />,
-          content: <div>
-            <b>{notifications[i].title}</b>
-            <p>{notifications[i].longDescription}</p>
-            <a href={notifications[i].link}>{notifications[i].linkTitle}</a>
-          </div>
-        };
+        var notificationItem = buildNotification(notifications[i]);
         notificationData.push(notificationItem);
       }
       setAPIData(notificationData);
     });
   }
+
+  const RequestNotificationCount = () => {
+    return notificationData.length;
+  }
+
+  const AddLocalNotification = (n) => {
+    var notificationItem = buildNotification(n);
+    notificationData.push(notificationItem);
+    setAPIData(notificationData);
+    return notificationData.length;
+  }
+
+  function buildNotification(n){
+    return {
+      id: n.id,
+      featured: true,
+      unread: true,
+      image: <img width={40} src={n.thumbnail}></img>,
+      message: n.title,
+      href: n.linkTitle,
+      timestamp: <Timestamp timestamp={n.created} />,
+      content: <div>
+        <b>{n.title}</b>
+        <p>{n.longDescription}</p>
+        <a href={n.link}>{n.linkTitle}</a>
+      </div>
+    };
+  }
+
   return APIData ?
   <NotificationsPanel class="NotificationsFlyout"
       heading="Notifications"
