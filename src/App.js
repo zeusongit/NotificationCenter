@@ -4,16 +4,16 @@ import React, { useEffect, useState } from 'react';
 import NotificationsPanel from '@filipeop/notifications-panel';
 import Timestamp from '@hig/timestamp';
 
+let notificationData = [];
 function App() {
   const [APIData, setAPIData] = useState([]);
   useEffect(() => {
     window.RequestNotifications = RequestNotifications;
-    window.RequestNotificationCount = RequestNotificationCount;
     window.AddLocalNotification = AddLocalNotification;
   }, [APIData]);
 
-  let notificationData = [];  
   const RequestNotifications = (url) => {
+    notificationData = [];
     axios.get(url)
     .then((response) => {
       const notifications = response.data.notifications;
@@ -24,10 +24,6 @@ function App() {
       }
       setAPIData(notificationData);
     });
-  }
-
-  const RequestNotificationCount = () => {
-    return notificationData.length;
   }
 
   const AddLocalNotification = (n) => {
